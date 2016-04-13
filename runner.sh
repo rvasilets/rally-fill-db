@@ -8,8 +8,10 @@ if [[ " ${arr[@]} " =~ " $1 " ]]; then
     echo "Required to install Rally at least before."
     echo
     echo "Arguments:"
-    echo "--task-count <task_count>      - Count of newly created tasks in db"
-    echo "--task <task_file>        - Path to Rally task file"
+    echo "--task-count <task_count>                   - Count of newly created tasks in db(optional)"
+    echo "--task <task_file>                          - Path to Rally task file"
+    echo "--deployments-count <task_file>             - Path to Rally task file(optional)"
+    echo "--deployment <deployment_file>              - Path to Rally deployment file"
     exit 0
 fi
 
@@ -23,6 +25,9 @@ fi
 # some arguments don't have a corresponding value to go with it such
 # as in the --default example).
 # note: if this is set to > 0 the /etc/hosts part is not recognized ( may be a bug )
+
+DEPLOYMENTS_COUNT=10
+TASKS_PER_DEPLOYMENT=10
 
 while [[ $# > 1 ]]
 do
