@@ -3,8 +3,9 @@
 arr=(-h --help help)
 
 if [[ " ${arr[@]} " =~ " $1 " ]]; then
-    echo "Script runs in parallel rally verify and rally task"
-    echo "This is required to run functional testing during the load"
+    echo "Script runs rally task start. This is needed to fill Rally db and "
+    echo "to test db stuff"
+    echo "Required to install Rally at least before."
     echo
     echo "Arguments:"
     echo "--task-count <task_count>      - Count of newly created tasks in db"
