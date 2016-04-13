@@ -6,7 +6,7 @@ Prepare Rally
 
 Running script
 
-  . runner.sh --task <task_file> --count <tasks_count>
+  . runner.sh --task <task_file> --tasks-count <tasks_count> --deployment <deployment_file> --deployments-count <deployment_count>
 
-Script creates <task_count> tasks in you db.
+Script creates <deployment_count> deployments with <task_count> per deployment tasks in you db.
 
