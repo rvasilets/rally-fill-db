@@ -51,7 +51,7 @@ do
     esac
     shift # past argument or value
 done
-for ((i=1;i<=DEPLOYMENT_COUNT;i++)); do
+for ((i=1;i<=DEPLOYMENTS_COUNT;i++)); do
     rally deployment create --filename $DEPLOYMENT --name filled+$i
     for ((j=1;j<=TASKS_PER_DEPLOYMENT;j++)); do
         rally task start --task $TASK
