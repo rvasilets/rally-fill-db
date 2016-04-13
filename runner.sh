@@ -33,8 +33,16 @@ do
         TASK="$2"
         shift # past argument
         ;;
-        --task-count)
-        TASK_COUNT="$2"
+        --tasks-count)
+        TASKS_PER_DEPLOYMENT="$2"
+        shift # past argument
+        ;;
+        --deployments-count)
+        DEPLOYMENTS_COUNT="$2"
+        shift # past argument
+        ;;
+        --deployment)
+        DEPLOYMENT="$2"
         shift # past argument
         ;;
         *)
@@ -43,6 +51,9 @@ do
     esac
     shift # past argument or value
 done
-for ((i=1;i<=TASK_COUNT;i++)); do
-    rally task start --task $TASK
+for ((i=1;i<=DEPLOYMENT_COUNT;i++)); do
+    rally deployment create --filename $DEPLOYMENT --name filled+$i
+    for ((j=1;j<=TASKS_PER_DEPLOYMENT;j++)); do
+        rally task start --task $TASK
+    done
 done
