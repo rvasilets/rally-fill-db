@@ -12,6 +12,7 @@ if [[ " ${arr[@]} " =~ " $1 " ]]; then
     echo "--task <task_file>                          - Path to Rally task file"
     echo "--deployments-count <task_file>             - Path to Rally task file(optional)"
     echo "--deployment <deployment_file>              - Path to Rally deployment file"
+    echo "--type <type_of_filling>                    - Type of the way to fill Rally db."
     exit 0
 fi
 
@@ -50,15 +51,48 @@ do
         DEPLOYMENT="$2"
         shift # past argument
         ;;
+        --type)
+        TYPE="$2"
+        shift
+        ;;
         *)
                 # unknown option
         ;;
     esac
     shift # past argument or value
 done
-for ((i=1;i<=DEPLOYMENTS_COUNT;i++)); do
-    rally deployment create --filename $DEPLOYMENT --name filled+$i
-    for ((j=1;j<=TASKS_PER_DEPLOYMENT;j++)); do
-        rally task start --task $TASK
-    done
-done
+
+START=$(date +%s)
+
+case $type in
+        1)
+        for ((i=1;i<=DEPLOYMENTS_COUNT;i++)); do
+            rally deployment create --filename $DEPLOYMENT --name filled+$i
+            for ((j=1;j<=TASKS_PER_DEPLOYMENT;j++)); do
+                rally task start --task $TASK
+            done
+        done
+        ;;
+        2)
+        
+        ;;
+        --deployments-count)
+        DEPLOYMENTS_COUNT="$2"
+        shift # past argument
+        ;;
+        --deployment)
+        DEPLOYMENT="$2"
+        shift # past argument
+        ;;
+        --type)
+        TYPE="$2"
+        shift
+        ;;
+        *)
+                # unknown option
+        ;;
+    esac
+
+END=$(date +%s)
+DIFF=$(( $END - $START ))
+echo "It took $DIFF seconds."
