@@ -74,19 +74,14 @@ case $type in
         done
         ;;
         2)
-        
-        ;;
-        --deployments-count)
-        DEPLOYMENTS_COUNT="$2"
-        shift # past argument
-        ;;
-        --deployment)
-        DEPLOYMENT="$2"
-        shift # past argument
-        ;;
-        --type)
-        TYPE="$2"
-        shift
+        for ((i=1;i<=DEPLOYMENTS_COUNT;i++)); do
+            rally deployment create --filename $DEPLOYMENT --name filled+$i
+            TASKS_PER_DEPLOYMENT=$RANDOM
+            for ((j=1;j<=TASKS_PER_DEPLOYMENT;j++)); do
+                FILE=$(ls ./samples/tasks/ | shuf -n 1)
+                rally task start --task $FILE
+            done
+        done
         ;;
         *)
                 # unknown option
