@@ -62,8 +62,6 @@ do
     shift # past argument or value
 done
 
-START=$(date +%s)
-
 case $type in
         1)
         for ((i=1;i<=DEPLOYMENTS_COUNT;i++)); do
@@ -76,7 +74,7 @@ case $type in
         2)
         for ((i=1;i<=DEPLOYMENTS_COUNT;i++)); do
             rally deployment create --filename $DEPLOYMENT --name filled+$i
-            TASKS_PER_DEPLOYMENT=$RANDOM
+            TASKS_PER_DEPLOYMENT= expr $RANDOM % $TASKS_PER_DEPLOYMENT
             for ((j=1;j<=TASKS_PER_DEPLOYMENT;j++)); do
                 FILE=$(ls ./samples/tasks/ | shuf -n 1)
                 rally task start --task $FILE
@@ -88,6 +86,10 @@ case $type in
         ;;
     esac
 
+START=$(date +%s)
+for ((i=1;i<=DEPLOYMENTS_COUNT;i++)); do
+    rally deployment destroy filled+$i
+done
 END=$(date +%s)
 DIFF=$(( $END - $START ))
 echo "It took $DIFF seconds."
