@@ -86,10 +86,10 @@ case $type in
         ;;
     esac
 
-START=$(date +%s)
+START=$(date +%s.%N)
 for ((i=1;i<=DEPLOYMENTS_COUNT;i++)); do
     rally deployment destroy filled+$i
 done
-END=$(date +%s)
-DIFF=$(( $END - $START ))
+END=$(date +%s.%N)
+DIFF=$(echo "$END - $START" | bc)
 echo "It took $DIFF seconds."
