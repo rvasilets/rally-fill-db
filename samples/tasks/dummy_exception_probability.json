@@ -6,7 +6,7 @@
             },
             "runner": {
                 "type": "constant",
-                "times": 1000,
+                "times": 10,
                 "concurrency": 1
             },
             "context": {

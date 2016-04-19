@@ -4,9 +4,9 @@
     "region_name": "RegionOne",
     "endpoint_type": "public",
     "admin": {
-        "username": "demo",
-        "password": "666666",
-        "tenant_name": "demo"
+        "username": "admin",
+        "password": "0663020670",
+        "tenant_name": "admin"
     }
 }
 

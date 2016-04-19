@@ -55,6 +55,10 @@ do
         TYPE="$2"
         shift
         ;;
+        --times)
+        TIMES="$2"
+        shift
+        ;;
         *)
                 # unknown option
         ;;
@@ -62,7 +66,12 @@ do
     shift # past argument or value
 done
 
-case $type in
+function set_times_in_task {
+    touch temp_task_file
+    cat $1 | jq --arg iter $2 '.[][0].runner.times = $iter' > temp_task_file
+}
+
+case $TYPE in
         1)
         for ((i=1;i<=DEPLOYMENTS_COUNT;i++)); do
             rally deployment create --filename $DEPLOYMENT --name filled+$i
@@ -77,7 +86,10 @@ case $type in
             TASKS_PER_DEPLOYMENT= expr $RANDOM % $TASKS_PER_DEPLOYMENT
             for ((j=1;j<=TASKS_PER_DEPLOYMENT;j++)); do
                 FILE=$(ls ./samples/tasks/ | shuf -n 1)
+                FILE="samples/tasks/"$FILE
+                #set_times_in_task $FILE TIMES
                 rally task start --task $FILE
+                #rm temp_task_file
             done
         done
         ;;
@@ -87,9 +99,10 @@ case $type in
     esac
 
 START=$(date +%s.%N)
+rally deployment list
 for ((i=1;i<=DEPLOYMENTS_COUNT;i++)); do
     rally deployment destroy filled+$i
 done
 END=$(date +%s.%N)
 DIFF=$(echo "$END - $START" | bc)
-echo "It took $DIFF seconds."
+echo "Destroy of deployments took $DIFF seconds."
