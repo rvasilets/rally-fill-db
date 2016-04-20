@@ -14,8 +14,8 @@ def update_times(time):
                 task_config["runner"]["times"] = time
                 json.dumps(task_config, indent=4)
 
-def round_robin_fill(task_file, deployment_file, deployments_count=10,
-                     tasks_count=10):
+def round_robin_fill(task_file, deployment_file, deployments_count=1,
+                     tasks_count=1):
     for i in range(deployments_count):
         create_deployment(deployment_file, i)
         for j in range(tasks_count):
@@ -42,9 +42,9 @@ def main():
                       help="path to the task file")
     parser.add_option("--deployment", dest="deployment_file",
                       help="path to the rally deployment file")
-    parser.add_option("--deployments-count", dest="deployments_count", default=10,
+    parser.add_option("--deployments-count", dest="deployments_count", default=1,
                       help="number of created deployments")
-    parser.add_option("--tasks-count", dest="tasks_count", default=10,
+    parser.add_option("--tasks-count", dest="tasks_count", default=1,
                       help="number of tasks per deployment.")
     parser.add_option("--type", dest="fill_type",
                       help="type of filling Rally db")
