@@ -6,7 +6,7 @@ Prepare Rally
 
 Running script
 
-  . runner.sh --task <task_file> --tasks-count <tasks_count> --deployment <deployment_file> --deployments-count <deployment_count>
+    python runner.py --task samples/tasks/dummy.json --deployment samples/deployments/rally_deployment.json --deployments-count 2 --type 1
 
 Script creates <deployment_count> deployments with <task_count> per deployment tasks in you db.
 
