@@ -22,16 +22,16 @@ def round_robin_fill(task_file, deployment_file, deployments_count=10,
             run_task(task_file)
 
 def create_deployment(deployment_file, order):
-    subprocess.call(["rally", "deployment", "create", "--task",
+    subprocess.call(["rally", "deployment", "create", "--filename",
                       deployment_file, "--name", "filled%d" % order])
 
 def run_task(task_file):
-    subprocess.call(["rally", "task", "start", "--task", task_file])
+    subprocess.call(["rally", "task", "start", task_file])
 
 def destroy_deployment(name):
     subprocess.call(["rally", "deployment", "destroy", name])
 
-def destroy_all_deployments():
+def destroy_all_deployments(deployments_count):
     for i in range(deployments_count):
         name = "filled%d" % i
         destroy_deployment(name)
@@ -63,8 +63,9 @@ def main():
     if str(options.fill_type) == "1":
         round_robin_fill(task_file, deployment_file, deployments_count,
                          tasks_count)
+    subprocess.call(["rally", "deployment", "list"])
     start = time.time()
-    destroy_all_deployments()
+    destroy_all_deployments(deployments_count)
     print "Deployment destroy takes %f seconds." % (time.time() - start)
     
 
