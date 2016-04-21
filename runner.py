@@ -3,16 +3,20 @@ import os
 import optparse
 import subprocess
 import sys
+import tempfile
 import time
 
-def update_times(time):
-    for f in os.listdir("./samples/tasks/"):
-        task_file = os.path.join("./samples/tasks/", f)
-        if os.path.isfile(task_file):
+def update_times(time, name):
+    for f in os.listdir("samples/tasks/"):
+        task_file = os.path.join("samples/tasks/", f)
+        print name, task_file
+        if os.path.isfile(task_file) and task_file == name:
             with open(task_file) as fd:
-                task_config = json.loads(fd.read()).values()[0][0]
-                task_config["runner"]["times"] = time
-                json.dumps(task_config, indent=4)
+                task_config = json.loads(fd.read())
+                task_config.values()[0][0]["runner"]["times"] = time
+                tf = tempfile.NamedTemporaryFile(delete=False)
+                tf.write(json.dumps(task_config, indent=4))
+                return tf.name
 
 def round_robin_fill(task_file, deployment_file, deployments_count=1,
                      tasks_count=1):
@@ -48,7 +52,7 @@ def main():
                       help="number of tasks per deployment.", type="int")
     parser.add_option("--type", dest="fill_type", type="int",
                       help="type of filling Rally db")
-    parser.add_option("--times", dest="times", type="int",
+    parser.add_option("--times", dest="times", type="int", default=1,
                       help="number of iteration in tasks")
 
 
@@ -59,13 +63,15 @@ def main():
     deployments_count = options.deployments_count
     tasks_count = options.tasks_count
 
-    update_times(options.times)
+    task_file = update_times(options.times, task_file)
+    print task_file
     if str(options.fill_type) == "1":
         round_robin_fill(task_file, deployment_file, deployments_count,
                          tasks_count)
     subprocess.call(["rally", "deployment", "list"])
     start = time.time()
     destroy_all_deployments(deployments_count)
+    subprocess.call(["rally", "deployment", "list"])
     print "Deployment destroy takes %f seconds." % (time.time() - start)
     
 
