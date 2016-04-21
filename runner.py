@@ -45,9 +45,9 @@ def progression_fill(task_file, deployment_file, deployment_count=1, diff=1,
 def create_deployment(deployment_file, order):
     with open(deployment_file) as fd:
         deployment_cfg = json.loads(fd.read())
-        LOG.info("Creating deployment filled%d" % i)
+        LOG.info("Creating deployment filled%d" % order)
         api.Deployment.create(deployment_cfg, "filled%d" % order)
-        LOG.info("Created deployment filled%d" % i)
+        LOG.info("Created deployment filled%d" % order)
         
 
 def run_task(task_files_or_file, deployment):
@@ -66,8 +66,7 @@ def destroy_deployment(name):
     LOG.info("Started to destroy %s deployment.")
     api.Deployment.destroy(name)
     en = time.time()
-    LOF.info("Deployment %s destroy takes %f seconds." % (name, (en - st)))
-    print "Deployment %s destroy takes %f seconds." % (name, (en - st))
+    LOG.info("Deployment %s destroy takes %f seconds." % (name, (en - st)))
 
 def destroy_all_deployments(deployments_count):
     for i in range(deployments_count):
@@ -116,7 +115,7 @@ def main():
     if str(options.fill_type) == "1":
         round_robin_fill(task_file, deployment_file, deployments_count,
                          tasks_count)
-    elif str(options.full_type) == "2":
+    elif str(options.fill_type) == "2":
         progression_fill(task_file, deployment_file, deployments_count,
                          progression_difference, tasks_count)
     if destroy:
