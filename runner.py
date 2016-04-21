@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import optparse
 import subprocess
@@ -9,12 +10,13 @@ import time
 from rally import api
 from rally import plugins
 
-#TODO use api not cli
+
+LOG = logging.getLogger("fill_rally_db")
+
 
 def update_times(time, name):
     for f in os.listdir("samples/tasks/"):
         task_file = os.path.join("samples/tasks/", f)
-        print name, task_file
         if os.path.isfile(task_file) and task_file == name:
             with open(task_file) as fd:
                 task_config = json.loads(fd.read())
@@ -35,6 +37,7 @@ def progression_fill(task_file, deployment_file, deployment_count=1, diff=1,
     for i in range(deployment_count):
         create_deployment(deployment_file, i)
         tasks_count = st_cnt_tasks_per_deployment + diff * i
+        LOG.info("Started to run %d tasks" % tasks_count)
         for j in range(tasks_count):
             run_task(task_file)
     
@@ -42,7 +45,10 @@ def progression_fill(task_file, deployment_file, deployment_count=1, diff=1,
 def create_deployment(deployment_file, order):
     with open(deployment_file) as fd:
         deployment_cfg = json.loads(fd.read())
+        LOG.info("Creating deployment filled%d" % i)
         api.Deployment.create(deployment_cfg, "filled%d" % order)
+        LOG.info("Created deployment filled%d" % i)
+        
 
 def run_task(task_files_or_file, deployment):
     if isinstance(task_files_or_file, list):
@@ -57,8 +63,10 @@ def run_task(task_files_or_file, deployment):
 
 def destroy_deployment(name):
     st = time.time()
+    LOG.info("Started to destroy %s deployment.")
     api.Deployment.destroy(name)
     en = time.time()
+    LOF.info("Deployment %s destroy takes %f seconds." % (name, (en - st)))
     print "Deployment %s destroy takes %f seconds." % (name, (en - st))
 
 def destroy_all_deployments(deployments_count):
@@ -88,6 +96,11 @@ def main():
                       help=("bigger then 0 - if need to destroy, "
                             "0 - if not needed."))
 
+    fh = logging.FileHandler("fill_db.log")
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    fh.setFormatter(formatter)
+    fh.setLevel(logging.DEBUG)
+    LOG.addHandler(fh)
 
     (options, args) = parser.parse_args()
 
@@ -108,6 +121,7 @@ def main():
     if destroy:
         start = time.time()
         destroy_all_deployments(deployments_count)
+        LOG.info("Deployment destroy takes %f seconds." % (time.time() - start))
         print "Deployment destroy takes %f seconds." % (time.time() - start)
     
 
