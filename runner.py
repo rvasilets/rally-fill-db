@@ -51,7 +51,7 @@ def main():
     parser.add_option("--tasks-count", dest="tasks_count", default=1,
                       help="number of tasks per deployment.", type="int")
     parser.add_option("--type", dest="fill_type", type="int",
-                      help="type of filling Rally db")
+                      :wqhelp="type of filling Rally db")
     parser.add_option("--times", dest="times", type="int", default=1,
                       help="number of iteration in tasks")
 
