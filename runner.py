@@ -39,7 +39,7 @@ def progression_fill(task_file, deployment_file, deployment_count=1, diff=1,
         tasks_count = st_cnt_tasks_per_deployment + diff * i
         LOG.info("Started to run %d tasks" % tasks_count)
         for j in range(tasks_count):
-            run_task(task_file)
+            run_task(task_file, "filled%d" % i)
     
 
 def create_deployment(deployment_file, order):
@@ -59,7 +59,9 @@ def run_task(task_files_or_file, deployment):
     else:
         with open(task_files_or_file) as fd:
                 task_config = json.loads(fd.read())
+                LOG.info("Started task with config %s" % task_config)
                 api.Task.start(deployment, task_config)
+                LOG.info("Finished task with config %s" % task_config)
 
 def destroy_deployment(name):
     st = time.time()
