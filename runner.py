@@ -43,12 +43,12 @@ def main():
     parser.add_option("--deployment", dest="deployment_file",
                       help="path to the rally deployment file")
     parser.add_option("--deployments-count", dest="deployments_count", default=1,
-                      help="number of created deployments")
+                      help="number of created deployments", type="int")
     parser.add_option("--tasks-count", dest="tasks_count", default=1,
-                      help="number of tasks per deployment.")
-    parser.add_option("--type", dest="fill_type",
+                      help="number of tasks per deployment.", type="int")
+    parser.add_option("--type", dest="fill_type", type="int",
                       help="type of filling Rally db")
-    parser.add_option("--times", dest="times",
+    parser.add_option("--times", dest="times", type="int",
                       help="number of iteration in tasks")
 
 
