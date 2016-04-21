@@ -111,7 +111,7 @@ def main():
     progression_difference = options.progression_diff
     destroy = options.destroy
 
-    if hasattr(options, times):
+    if hasattr(options, "times"):
         task_file = update_times(options.times, task_file)
     if str(options.fill_type) == "1":
         round_robin_fill(task_file, deployment_file, deployments_count,
