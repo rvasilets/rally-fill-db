@@ -6,6 +6,11 @@ import sys
 import tempfile
 import time
 
+from rally import api
+from rally import plugins
+
+#TODO use api not cli
+
 def update_times(time, name):
     for f in os.listdir("samples/tasks/"):
         task_file = os.path.join("samples/tasks/", f)
@@ -23,17 +28,38 @@ def round_robin_fill(task_file, deployment_file, deployments_count=1,
     for i in range(deployments_count):
         create_deployment(deployment_file, i)
         for j in range(tasks_count):
+            run_task(task_file, "filled%d" % i)
+
+def progression_fill(task_file, deployment_file, deployment_count=1, diff=1,
+                     st_cnt_tasks_per_deployment=1):
+    for i in range(deployment_count):
+        create_deployment(deployment_file, i)
+        tasks_count = st_cnt_tasks_per_deployment + diff * i
+        for j in range(tasks_count):
             run_task(task_file)
+    
 
 def create_deployment(deployment_file, order):
-    subprocess.call(["rally", "deployment", "create", "--filename",
-                      deployment_file, "--name", "filled%d" % order])
+    with open(deployment_file) as fd:
+        deployment_cfg = json.loads(fd.read())
+        api.Deployment.create(deployment_cfg, "filled%d" % order)
 
-def run_task(task_file):
-    subprocess.call(["rally", "task", "start", task_file])
+def run_task(task_files_or_file, deployment):
+    if isinstance(task_files_or_file, list):
+        for f in task_files_or_file:
+            with open(f) as fd:
+                task_config = json.loads(fd.read())
+                api.Task.start(deployment, task_config)
+    else:
+        with open(task_files_or_file) as fd:
+                task_config = json.loads(fd.read())
+                api.Task.start(deployment, task_config)
 
 def destroy_deployment(name):
-    subprocess.call(["rally", "deployment", "destroy", name])
+    st = time.time()
+    api.Deployment.destroy(name)
+    en = time.time()
+    print "Deployment %s destroy takes %f seconds." % (name, (en - st))
 
 def destroy_all_deployments(deployments_count):
     for i in range(deployments_count):
@@ -41,6 +67,7 @@ def destroy_all_deployments(deployments_count):
         destroy_deployment(name)
 
 def main():
+    plugins.load()
     parser = optparse.OptionParser()
     parser.add_option("--task", dest="task_file",
                       help="path to the task file")
@@ -49,11 +76,14 @@ def main():
     parser.add_option("--deployments-count", dest="deployments_count", default=1,
                       help="number of created deployments", type="int")
     parser.add_option("--tasks-count", dest="tasks_count", default=1,
-                      help="number of tasks per deployment.", type="int")
+                      help=("number of tasks per deployment. For progression "
+                            "fill this is the base of progression."), type="int")
     parser.add_option("--type", dest="fill_type", type="int",
-                      :wqhelp="type of filling Rally db")
+                      help="type of filling Rally db")
     parser.add_option("--times", dest="times", type="int", default=1,
                       help="number of iteration in tasks")
+    parser.add_option("--diff", dest="progression_diff", type="int", default=1,
+                      help="difference use in progression fill.")
 
 
     (options, args) = parser.parse_args()
@@ -62,16 +92,17 @@ def main():
     deployment_file = options.deployment_file
     deployments_count = options.deployments_count
     tasks_count = options.tasks_count
+    progression_difference = options.progression_diff
 
     task_file = update_times(options.times, task_file)
-    print task_file
     if str(options.fill_type) == "1":
         round_robin_fill(task_file, deployment_file, deployments_count,
                          tasks_count)
-    subprocess.call(["rally", "deployment", "list"])
+    elif str(options.full_type) == "2":
+        progression_fill(task_file, deployment_file, deployments_count,
+                         progression_difference, tasks_count)
     start = time.time()
     destroy_all_deployments(deployments_count)
-    subprocess.call(["rally", "deployment", "list"])
     print "Deployment destroy takes %f seconds." % (time.time() - start)
     
 
