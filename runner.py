@@ -84,6 +84,9 @@ def main():
                       help="number of iteration in tasks")
     parser.add_option("--diff", dest="progression_diff", type="int", default=1,
                       help="difference use in progression fill.")
+    parser.add_option("--destroy", dest="destroy", type="int", default=1,
+                      help=("bigger then 0 - if need to destroy, "
+                            "0 - if not needed."))
 
 
     (options, args) = parser.parse_args()
@@ -93,6 +96,7 @@ def main():
     deployments_count = options.deployments_count
     tasks_count = options.tasks_count
     progression_difference = options.progression_diff
+    destroy = options.destroy
 
     task_file = update_times(options.times, task_file)
     if str(options.fill_type) == "1":
@@ -101,9 +105,10 @@ def main():
     elif str(options.full_type) == "2":
         progression_fill(task_file, deployment_file, deployments_count,
                          progression_difference, tasks_count)
-    start = time.time()
-    destroy_all_deployments(deployments_count)
-    print "Deployment destroy takes %f seconds." % (time.time() - start)
+    if destroy:
+        start = time.time()
+        destroy_all_deployments(deployments_count)
+        print "Deployment destroy takes %f seconds." % (time.time() - start)
     
 
 if __name__ == "__main__":
