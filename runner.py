@@ -96,22 +96,22 @@ def main():
     parser.add_option("--deployment", dest="deployment_file",
                       help="[REQUIRED] path to the rally deployment file")
     parser.add_option("--deployments-count", dest="deployments_count", default=1,
-                      help="number of created deployments", type="int")
+                      help="[OPTIONAL] number of created deployments. By default 1.", type="int")
     parser.add_option("--tasks-count", dest="tasks_count", default=1,
-                      help=("number of tasks per deployment. For progression "
-                            "fill this is the base of progression."), type="int")
+                      help=("[OPTIONAL] number of tasks per deployment. For progression "
+                            "fill this is the base of progression. By default 1."), type="int")
     parser.add_option("--type", dest="fill_type", type="int",
                       help="type of filling Rally db")
     parser.add_option("--times", dest="times", type="int",
-                      help="number of iteration in tasks")
+                      help="[OPTIONAL] number of iteration in tasks.")
     parser.add_option("--diff", dest="progression_diff", type="int", default=1,
-                      help="difference use in progression fill.")
+                      help="difference use in progression fill. When --type=2. By default 1.")
     parser.add_option("--destroy", dest="destroy", type="int", default=1,
                       help=("bigger then 0 - if need to destroy, "
-                            "0 - if not needed."))
+                            "0 - if not needed. By default it destroy."))
     parser.add_option("--use-fill", dest="use_fill", type="int", default=1,
                       help=("bigger then 0 - if need to fill db, "
-                            "0 - if not needed."))
+                            "0 - if not needed. By default it fills."))
 
     fh = logging.FileHandler("fill_db.log")
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -136,7 +136,7 @@ def main():
         parser.error("You must specify at least one of the options --destroy or --use-fill")  
     if use_fill:
         if options.fill_type is None:
-            parser.error("fill_type should be specified if u use --use-fill argument")
+            parser.error("--type should be specified if u use --use-fill argument")
         if str(options.fill_type) == "1":
             round_robin_fill(task_file, deployment_file, deployments_count,
                              tasks_count)
