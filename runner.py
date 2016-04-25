@@ -101,7 +101,9 @@ def main():
                       help=("[OPTIONAL] number of tasks per deployment. For progression "
                             "fill this is the base of progression. By default 1."), type="int")
     parser.add_option("--type", dest="fill_type", type="int",
-                      help="type of filling Rally db")
+                      help=("type of filling Rally db. 1st - creates <deployments-count> deployments "
+                            "each will have <tasks-count> tasks. 2nd - create <deployments-count> deployments "
+                            "every deployment will have <tasks-count> as it should due to progression."))
     parser.add_option("--times", dest="times", type="int",
                       help="[OPTIONAL] number of iteration in tasks.")
     parser.add_option("--diff", dest="progression_diff", type="int", default=1,
